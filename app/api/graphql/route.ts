@@ -8,10 +8,10 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
-
 export async function OPTIONS() {
     return NextResponse.json({}, { headers: corsHeaders });
 }
+
 
 
 export async function POST(request: NextRequest) {
@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
                     ${query}
                 `,
                 variables,
+            
             });
+
         } else {
             // Handle queries
             result = await serverClient.query({
@@ -40,7 +42,9 @@ export async function POST(request: NextRequest) {
                 variables,
             });
         }
+        console.log("resut is",result)
         const data = result.data;
+        console.log(data)
         return NextResponse.json({
         data,
     },

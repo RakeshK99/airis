@@ -20,25 +20,25 @@ function CreateChatbot() {
         e.preventDefault();
 
         try {
+            
             const { data } = await createChatbot({
                 variables: {
                     clerk_user_id: user?.id, 
-                    name, 
-                    created_at: new Date().toISOString(),
+                    name,
                 },
             });
 
             
-            router.push(`/edit-chatbot/${data.insertChatbots.id}`);
-            setName(""); 
+            router.push(`/edit-chatbot/${data.insertChatbots}`);
+            
         } catch (err) {
             console.error("Error creating chatbot:", err);
         }
     };
 
-    // if (!user) {
-    //     return null;
-    // }
+    if (!user) {
+        return null;
+    }
 
     return (
         <div className="flex flex-col items-center justify-center md:flex-row md:space-x-10 bg-white p-10 rounded-md m-10">
