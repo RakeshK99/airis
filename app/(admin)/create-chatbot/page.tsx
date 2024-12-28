@@ -12,29 +12,30 @@ import { FormEvent, useState } from "react";
 function CreateChatbot() {
     const { user } = useUser();
     const [name, setName] = useState("");
+    const created_at =  "2024-12-28T20:12:00.000Z";
     const router = useRouter();
 
     const [createChatbot, { loading, error }] = useMutation(CREATE_CHATBOT);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-
+      
         try {
-            
-            const { data } = await createChatbot({
-                variables: {
-                    clerk_user_id: user?.id, 
-                    name,
-                },
-            });
-
-            
-            router.push(`/edit-chatbot/${data.insertChatbots}`);
-            
+          const { data } = await createChatbot({
+            variables: {
+              clerk_user_id: user?.id,
+              name,
+              created_at: new Date().toISOString(), // Include the timestamp
+            },
+          });
+      
+          router.push(`/edit-chatbot/${data.insertChatbots.id}`);
+          setName("");
         } catch (err) {
-            console.error("Error creating chatbot:", err);
+          console.error("Error creating chatbot:", err);
         }
-    };
+      };
+      
 
     if (!user) {
         return null;
