@@ -56,18 +56,23 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
                 variables: {
                     chatbotId: Number(id),
                     content,
+                    createdAt: new Date().toISOString(), // Generate current timestamp
                 },
             });
-        
-            toast.promise(promise, {
+    
+            await toast.promise(promise, {
                 loading: "Adding...",
                 success: "Information added",
-                error: "Failed to add Information",
+                error: "Failed to add information",
             });
+    
+            console.log("Characteristic added successfully");
         } catch (err) {
             console.error("Failed to add characteristic:", err);
+            toast.error("Failed to add characteristic. Check console for details.");
         }
-    }
+    };
+    
     
 
     const handleDelete = async (id: string) => {
