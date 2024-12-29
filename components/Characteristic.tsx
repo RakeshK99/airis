@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { ChatbotCharacteristic } from "@/types/types";
 import { OctagonX } from "lucide-react";
@@ -12,38 +12,36 @@ function Characteristic({
 }: {
   characteristic: ChatbotCharacteristic;
 }) {
+  const [removeCharacteristic] = useMutation(REMOVE_CHARACTERISTIC, {
+    refetchQueries: ["GetChatbotById"], // Ensures the list refreshes after deletion
+  });
 
-    const [removeCharacteristic] = useMutation(REMOVE_CHARACTERISTIC, {
-        refetchQueries: ["GetChatbotById"],
+  const handleRemoveCharacteristic = async (id: number) => {
+    try {
+      const promise = removeCharacteristic({
+        variables: {
+          id, // Correct variable name for the mutation
+        },
       });
-      
-      const handleRemoveCharacteristic = async (characteristicID: number) => {
-        try {
-            await removeCharacteristic({
-              variables: {
-                id: characteristicID,
-              },
-            });
-          } catch (error) {
-            console.error(error);
-          }
-          
-      };
-      
+
+      // Display success/failure toast messages
+      await toast.promise(promise, {
+        loading: "Removing...",
+        success: "Characteristic removed",
+        error: "Failed to remove characteristic",
+      });
+    } catch (error) {
+      console.error("Error removing characteristic:", error);
+      toast.error("Failed to remove characteristic. Please try again.");
+    }
+  };
+
   return (
-    <li className="relative p-10 bg-white border rounded-md">
+    <li key={characteristic.id} className="relative p-10 bg-white border rounded-md">
       {characteristic.content}
       <OctagonX
         className="w-6 h-6 text-white fill-red-500 absolute top-1 right-1 cursor-pointer hover:opacity-50"
-        onClick={() => {
-        const promise = handleRemoveCharacteristic(characteristic.id);
-        toast.promise(promise, {
-            loading: "Removing...",
-            success: "Characteristic removed",
-            error: "Failed to remove characteristic",
-        });
-        
-        }}
+        onClick={() => handleRemoveCharacteristic(characteristic.id)}
       />
     </li>
   );

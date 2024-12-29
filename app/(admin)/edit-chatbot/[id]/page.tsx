@@ -166,12 +166,14 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
   in your conversations with your customers & users
                 </p>
                 
-                <div>
+                <div className="bg-gray-200 p-5 md:pd-5 rounded-md mt-5">
                     <form onSubmit={e =>{
                         e.preventDefault();
                         handleAddCharacteristic(newCharacteristic);
                         setNewCharacteristic("");
-                    }}>
+                    }}
+                    className="flex sace-x-2 mb-5"
+                    >
                     <Input
                         type="text"
                          placeholder="Example: If customer asks for prices, provide pricing page: www.example.com/pricing"
