@@ -3,14 +3,18 @@
 import { BASE_URL } from "@/graphql/apolloClient";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
+import Avatar from "@/components/Avatar";
 
 export default function EditChatbot({ params }: { params: { id: string } }) {
-    const { id } = params; // No need to await since params is not a Promise
+    const { id } = (params);
+     // No need to await since params is not a Promise
     const [url, setUrl] = useState<string>("");
+    const [chatbotName, setChatbotName] = useState<string>("");
+
 
     useEffect(() => {
         if (id) {
@@ -43,6 +47,15 @@ export default function EditChatbot({ params }: { params: { id: string } }) {
                     </Button>
                 </div>
             </div>
+            <section className="relative mt-5 bg-white p-5 md:p-10 rounded-lg">
+                <Button variant="destructive" className="absolute top-2 right-2 h-8 w-2"
+                // onCLick={() => handleDelete(id)}
+                >
+                    X</Button>
+                <div>
+                        <Avatar seed={chatbotName} />
+                </div>
+            </section>
         </div>
     );
 }
