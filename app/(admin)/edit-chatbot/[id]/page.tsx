@@ -51,21 +51,27 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
     }, [id]);
 
     const handleAddCharacteristic = async (content: string) => {
+        if (!content.trim()) {
+            toast.error("Characteristic cannot be empty!");
+            return;
+        }
+
         try {
             const promise = addCharacteristic({
                 variables: {
                     chatbotId: Number(id),
-                    content,
-                    createdAt: new Date().toISOString(), // Generate current timestamp
+                    content: content.trim(),
+                    createdAt: new Date().toISOString(), // Use current timestamp
                 },
             });
-    
+
             await toast.promise(promise, {
                 loading: "Adding...",
-                success: "Information added",
-                error: "Failed to add information",
+                success: "Characteristic added successfully!",
+                error: "Failed to add characteristic",
             });
-    
+
+            setNewCharacteristic(""); // Reset the input after successful addition
             console.log("Characteristic added successfully");
         } catch (err) {
             console.error("Failed to add characteristic:", err);
