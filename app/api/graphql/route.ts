@@ -17,8 +17,8 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
     const { query, variables } = await request.json();
 
-    console.log("DEBUG 1", query);
-    console.log("DEBUG 2", variables);
+    // console.log("DEBUG 1", query);
+    // console.log("DEBUG 2", variables);
 
     try {
         let result;
@@ -42,9 +42,9 @@ export async function POST(request: NextRequest) {
                 variables,
             });
         }
-        console.log("resut is",result)
+        //console.log("resut is",result)
         const data = result.data;
-        console.log(data)
+        //console.log(data)
         return NextResponse.json({
         data,
     },

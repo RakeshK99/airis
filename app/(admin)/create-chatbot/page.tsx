@@ -28,7 +28,6 @@ function CreateChatbot() {
               created_at: new Date().toISOString(), // Include the timestamp
             },
           });
-          console.log("Data from mutation:", data);
           router.push(`/edit-chatbot/${data.insertChatbots.id}`);
           setName("");
         } catch (err) {
