@@ -12,7 +12,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import { GET_CHATBOT_BY_ID } from "@/graphql/queries/queries";
 import { GetChatbotByIdResponse, GetChatbotByIdVariables} from "@/types/types";
 import Characteristic from "@/components/Characteristic";
-import { DELETE_CHATBOT } from "@/graphql/mutations/mutations";
+import { ADD_CHARACTERISTIC, DELETE_CHATBOT } from "@/graphql/mutations/mutations";
 import { redirect } from "next/navigation";
 
 export default function EditChatbot(props: { params: Promise<{ id: string }> }) {
@@ -26,6 +26,10 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
         refetchQueries: ["GetChatbotById"], // Refetch the chatbots after deleting
         awaitRefetchQueries: true,
       });
+    const [addCharacteristic] = useMutation(ADD_CHARACTERISTIC, {
+        refetchQueries: ["GetChatbotById"],
+    });
+    
       
     const { data, loading, error } = useQuery<
     GetChatbotByIdResponse,
@@ -45,6 +49,26 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
             setUrl(generatedUrl);
         }
     }, [id]);
+
+    const handleAddCharacteristic = async (content: string) => {
+        try {
+            const promise = addCharacteristic({
+                variables: {
+                    chatbotId: Number(id),
+                    content,
+                },
+            });
+        
+            toast.promise(promise, {
+                loading: "Adding...",
+                success: "Information added",
+                error: "Failed to add Information",
+            });
+        } catch (err) {
+            console.error("Failed to add characteristic:", err);
+        }
+    }
+    
 
     const handleDelete = async (id: string) => {
         const isConfirmed = window.confirm(
@@ -132,7 +156,11 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
                 </p>
                 
                 <div>
-                    <form>
+                    <form onSubmit={e =>{
+                        e.preventDefault();
+                        handleAddCharacteristic(newCharacteristic);
+                        setNewCharacteristic("");
+                    }}>
                     <Input
                         type="text"
                          placeholder="Example: If customer asks for prices, provide pricing page: www.example.com/pricing"
