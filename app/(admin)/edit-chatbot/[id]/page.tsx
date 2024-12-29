@@ -3,15 +3,16 @@
 import { BASE_URL } from "@/graphql/apolloClient";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useState, useEffect} from "react";
+import { useState, useEffect, use } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import Avatar from "@/components/Avatar";
 
-export default function EditChatbot({ params }: { params: { id: string } }) {
+export default function EditChatbot(props: { params: Promise<{ id: string }> }) {
+    const params = use(props.params);
     const { id } = (params);
-     // No need to await since params is not a Promise
+    // No need to await since params is not a Promise
     const [url, setUrl] = useState<string>("");
     const [chatbotName, setChatbotName] = useState<string>("");
 
