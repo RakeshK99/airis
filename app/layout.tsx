@@ -8,6 +8,7 @@ import {
   UserButton
 } from '@clerk/nextjs'
 import ApolloProviderWrapper from "@/components/ApolloProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,7 +27,7 @@ export default function RootLayout({
       <body className="min-h-screen flex">
         {children}
         
-        {/* Toaster  */}
+        <Toaster position="bottom-center" />
 
       </body>
     </html>
