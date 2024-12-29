@@ -3,7 +3,7 @@
 import { BASE_URL } from "@/graphql/apolloClient";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -12,7 +12,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import { GET_CHATBOT_BY_ID } from "@/graphql/queries/queries";
 import { GetChatbotByIdResponse, GetChatbotByIdVariables} from "@/types/types";
 import Characteristic from "@/components/Characteristic";
-import { ADD_CHARACTERISTIC, DELETE_CHATBOT } from "@/graphql/mutations/mutations";
+import { ADD_CHARACTERISTIC, DELETE_CHATBOT, UPDATE_CHATBOT } from "@/graphql/mutations/mutations";
 import { redirect } from "next/navigation";
 
 export default function EditChatbot(props: { params: Promise<{ id: string }> }) {
@@ -29,7 +29,11 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
     const [addCharacteristic] = useMutation(ADD_CHARACTERISTIC, {
         refetchQueries: ["GetChatbotById"],
     });
-    
+    // Update Chatbot Mutation
+const [updateChatbot] = useMutation(UPDATE_CHATBOT, {
+        refetchQueries: ["GetChatbotById"],
+    });
+
       
     const { data, loading, error } = useQuery<
     GetChatbotByIdResponse,
@@ -78,6 +82,28 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
             toast.error("Failed to add characteristic. Check console for details.");
         }
     };
+
+    const handleUpdateChatbot = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+    
+        try {
+            const promise = updateChatbot({
+                variables: {
+                    id,
+                    name: chatbotName,
+                },
+            });
+    
+            toast.promise(promise, {
+                loading: "Updating...",
+                success: "Chatbot Name Successfully updated!",
+                error: "Failed to update chatbot",
+            });
+        } catch (err) {
+            console.error("Failed to update chatbot:", err);
+        }
+    };
+    
     
     
 
@@ -147,7 +173,7 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
                     X</Button>
                 <div className="flex space-x-4">
                         <Avatar seed={chatbotName} />
-                        <form //onSubmit={handleUpdateChatbot}
+                        <form onSubmit={handleUpdateChatbot}
                         className="flex flex-1 space-x-2 items-center"
                         >
                             <Input value={chatbotName}
