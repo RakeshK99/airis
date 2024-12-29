@@ -8,13 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 
-export default async function EditChatbot({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params; // Unwrap params properly
+export default function EditChatbot({ params }: { params: { id: string } }) {
+    const { id } = params; // No need to await since params is not a Promise
     const [url, setUrl] = useState<string>("");
 
     useEffect(() => {
-        const url = `${BASE_URL}/chatbot/${id}`;
-        setUrl(url);
+        if (id) {
+            const generatedUrl = `${BASE_URL}/chatbot/${id}`;
+            setUrl(generatedUrl);
+        }
     }, [id]);
 
     return (

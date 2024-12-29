@@ -29,7 +29,7 @@ function CreateChatbot() {
             },
           });
           console.log("Data from mutation:", data);
-          router.push(`/admin/edit-chatbot/${data.insertChatbots.id}`);
+          router.push(`/edit-chatbot/${data.insertChatbots.id}`);
           setName("");
         } catch (err) {
           console.error("Error creating chatbot:", err);
