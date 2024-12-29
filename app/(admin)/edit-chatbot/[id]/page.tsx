@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import Avatar from "@/components/Avatar";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { GET_CHATBOT_BY_ID } from "@/graphql/queries/queries";
 import { GetChatbotByIdResponse, GetChatbotByIdVariables} from "@/types/types";
 import Characteristic from "@/components/Characteristic";
+import { DELETE_CHATBOT } from "@/graphql/mutations/mutations";
 
 export default function EditChatbot(props: { params: Promise<{ id: string }> }) {
     const params = use(props.params);
@@ -20,7 +21,11 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
     const [url, setUrl] = useState<string>("");
     const [newCharacteristic, setNewCharacteristic] = useState<string>("");
     const [chatbotName, setChatbotName] = useState<string>("");
-
+    const [deleteChatbot] = useMutation(DELETE_CHATBOT, {
+        refetchQueries: ["GetChatbotById"], // Refetch the chatbots after deleting
+        awaitRefetchQueries: true,
+      });
+      
     const { data, loading, error } = useQuery<
     GetChatbotByIdResponse,
     GetChatbotByIdVariables
@@ -39,6 +44,26 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
             setUrl(generatedUrl);
         }
     }, [id]);
+
+    const handleDelete = async (id: string) => {
+        const isConfirmed = window.confirm(
+          "Are you sure you want to delete this chatbot?"
+        );
+        if (!isConfirmed) return;
+      
+        try {
+          const promise = deleteChatbot({ variables: { id } });
+          toast.promise(promise, {
+            loading: "Deleting...",
+            success: "Chatbot Successfully deleted!",
+            error: "Failed to delete chatbot",
+          });
+        } catch (error) {
+          console.error("Error deleting chatbot:", error);
+          toast.error("Failed to delete chatbot");
+        }
+      };
+
 
     return (
         <div className="px-0 md:p-10">
@@ -65,8 +90,10 @@ export default function EditChatbot(props: { params: Promise<{ id: string }> }) 
                 </div>
             </div>
             <section className="relative mt-5 bg-white p-5 md:p-10 rounded-lg">
-                <Button variant="destructive" className="absolute top-2 right-2 h-8 w-2"
-                // onCLick={() => handleDelete(id)}
+                <Button 
+                variant="destructive" 
+                className="absolute top-2 right-2 h-8 w-2"
+                onClick={() => handleDelete(id)}
                 >
                     X</Button>
                 <div className="flex space-x-4">
