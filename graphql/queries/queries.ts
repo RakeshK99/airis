@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const GET_CHATBOTS_BY_USER = gql`
   query GetChatbots {
-    chatbots {
+    chatbotsList {
       id
       name
       created_at
