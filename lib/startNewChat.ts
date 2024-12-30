@@ -27,19 +27,18 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
     const chatSessionId = chatSessionResult.data.insertChat_sessions.id;
     console.log("Chat session created with ID:", chatSessionId);
 
+    // 3. Insert initial message (optional)
+    await client.mutate({
+      mutation: INSERT_MESSAGE,
+      variables: {
+        chat_session_id: chatSessionId,
+        sender: "ai",
+        content: `Welcome ${guestName}!\nHow can I assist you today? 😊`,
+      },
+    });
+    
+    console.log("New chat session started successfully!")
     return chatSessionId;
-
-// 3. Insert initial message (optional)
-await client.mutate({
-    mutation: INSERT_MESSAGE,
-    variables: {
-      chat_session_id: chatSessionId,
-      sender: "ai",
-      // TODO: Change this for the dynamic message we want to send in backend
-      content: `Welcome ${guestName}!\nHow can I assist you today? 😊`,
-    },
-  });
-
   } catch (error) {
     console.error("Error starting new chat session:", error);
     throw error;

@@ -14,6 +14,7 @@ import { Message } from "postcss";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import startNewChat from "@/lib/startNewChat";
 
 function ChatbotPage(props: { params: Promise<{ id: string }> }) {
   const [name, setName] = useState("");
