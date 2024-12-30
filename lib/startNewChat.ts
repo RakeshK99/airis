@@ -9,7 +9,7 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
       variables: {
         name: guestName,
         email: guestEmail,
-        created_at: new Date().toISOString(),
+        created_at: new Date().toISOString(), // Ensure created_at is included
       },
     });
 
@@ -22,7 +22,7 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
       variables: {
         chatbot_id: chatbotId,
         guest_id: guestId,
-        created_at: new Date().toISOString(),
+        created_at: new Date().toISOString(), // Ensure created_at is included
       },
     });
 
@@ -36,6 +36,7 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
         chat_session_id: chatSessionId,
         sender: "ai",
         content: `Welcome ${guestName}!\nHow can I assist you today? 😊`,
+        created_at: new Date().toISOString(), // Ensure created_at is included
       },
     });
 

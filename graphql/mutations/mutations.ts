@@ -53,11 +53,13 @@ export const INSERT_MESSAGE = gql`
     $chat_session_id: Int!
     $content: String!
     $sender: String!
+    $created_at: DateTime!
   ) {
     insertMessages(
       chat_session_id: $chat_session_id
       content: $content
       sender: $sender
+      created_at: $created_at
     ) {
       id
       content
@@ -66,6 +68,7 @@ export const INSERT_MESSAGE = gql`
     }
   }
 `;
+
 
 export const INSERT_GUEST = gql`
   mutation InsertGuest($name: String!, $email: String!, $created_at: DateTime!) {
