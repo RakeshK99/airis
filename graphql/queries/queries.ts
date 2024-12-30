@@ -1,11 +1,12 @@
 import { gql } from "@apollo/client";
 
 export const GET_CHATBOTS_BY_USER = gql`
-  query GetChatbotsByUser($clerk_user_id: String!) {
-    chatbotsByUser(clerk_user_id: $clerk_user_id) {
+  query GetChatbots {
+    chatbots {
       id
       name
       created_at
+      clerk_user_id
       chatbot_characteristics {
         id
         content
@@ -24,6 +25,7 @@ export const GET_CHATBOTS_BY_USER = gql`
     }
   }
 `;
+
 
 
 export const GET_CHATBOT_BY_ID = gql`
