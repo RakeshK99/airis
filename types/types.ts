@@ -80,6 +80,14 @@ export interface GetChatbotsByUserData {
       };
     };
   }
+
+  export interface MessagesByChatSessionIdResponse {
+    chat_sessions: ChatSession;
+  }
+
+  export interface MessagesByChatSessionIdVariables {
+    chat_session_id: number;
+  }
   
   
   

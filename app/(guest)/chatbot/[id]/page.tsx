@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import {
   Dialog,
@@ -9,15 +9,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Message } from "postcss";
+// import { Message } from "postcss";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import startNewChat from "@/lib/startNewChat";
 import Avatar from "@/components/Avatar";
-import { GetChatbotByIdResponse } from "@/types/types";
+import { GetChatbotByIdResponse, Message, MessagesByChatSessionIdResponse, MessagesByChatSessionIdVariables } from "@/types/types";
 import { useQuery } from "@apollo/client";
-import { GET_CHATBOT_BY_ID } from "@/graphql/queries/queries";
+import { GET_CHATBOT_BY_ID, GET_MESSAGES_BY_CHAT_SESSION_ID } from "@/graphql/queries/queries";
 
 function ChatbotPage(props: { params: Promise<{ id: string }> }) {
   const params = use(props.params);
@@ -36,6 +36,25 @@ function ChatbotPage(props: { params: Promise<{ id: string }> }) {
       variables: { id },
     }
   );
+
+  const {
+    loading: loadingQuery,
+    error,
+    data,
+  } = useQuery<MessagesByChatSessionIdResponse, MessagesByChatSessionIdVariables>(
+    GET_MESSAGES_BY_CHAT_SESSION_ID,
+    {
+      variables: { chat_session_id: chatId },
+      skip: !chatId,
+    }
+  );
+  
+  useEffect(() => {
+    if (data) {
+      setMessages(data.chat_sessions.messages);
+    }
+  }, [data]);
+
 
   const handleInformationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
