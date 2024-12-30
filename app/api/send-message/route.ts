@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     // Step 3: Send the message to OpenAI's completions API
     const openaiResponse = await openai.chat.completions.create({
       messages: messages,
-      model: "gpt-4o",
+      model: "gpt-3.5-turbo",
     });
 
     const aiResponse = openaiResponse?.choices?.[0]?.message?.content?.trim();
@@ -81,16 +81,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const timestamp = new Date().toISOString();
+
     // Step 4: Save the user's message in the database
     await serverClient.mutate({
       mutation: INSERT_MESSAGE,
-      variables: { chat_session_id, content, sender: "user" },
+      variables: { chat_session_id, content, sender: "user", created_at: timestamp },
     });
 
     // Step 5: Save the AI's response in the database
     const aiMessageResult = await serverClient.mutate({
       mutation: INSERT_MESSAGE,
-      variables: { chat_session_id, content: aiResponse, sender: "ai" },
+      variables: { chat_session_id, content: aiResponse, sender: "ai", created_at: timestamp },
     });
 
     // Step 6: Return the AI's response to the client
@@ -100,6 +102,13 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error sending message:", error);
-    return NextResponse.json({ error }, { status: 500 });
+  
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error occurred while processing your request.",
+      },
+      { status: 500 }
+    );
   }
+  
 }

@@ -27,12 +27,12 @@ function Messages({
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto space-y-10 py-10 px-5 bg-white rounded-lg">
-      {messages.map((message) => {
+      {messages.map((message, index) => {
         const isSender = message.sender !== "user";
 
         return (
           <div
-            key={message.id}
+            key={message.id || `message-${index}`}
             className={`chat ${isSender ? "chat-start" : "chat-end"} relative`}
           >
             {isReviewsPage && (

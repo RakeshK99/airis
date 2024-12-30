@@ -42,15 +42,14 @@ const formSchema = z.object({
   message: z.string().min(2, "Your Message is too short!"),
 });
 
-function ChatbotPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-
+function ChatbotPage({ params }: { params: { id: string } }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isOpen, setIsOpen] = useState(true);
   const [chatId, setChatId] = useState(0);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [id, setId] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,20 +58,33 @@ function ChatbotPage({ params }: { params: Promise<{ id: string }> }) {
     },
   });
 
+  useEffect(() => {
+    // Resolve `params` and set the `id` state
+    (async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    })();
+  }, [params]);
+
   const { data: chatBotData } = useQuery<GetChatbotByIdResponse>(
     GET_CHATBOT_BY_ID,
     {
       variables: { id },
+      skip: !id,
     }
   );
 
-  const { loading: loadingQuery, data } = useQuery<
-    MessagesByChatSessionIdResponse,
-    MessagesByChatSessionIdVariables
-  >(GET_MESSAGES_BY_CHAT_SESSION_ID, {
-    variables: { chat_session_id: chatId },
-    skip: !chatId,
-  });
+  const {
+    loading: loadingQuery,
+    error,
+    data,
+  } = useQuery<MessagesByChatSessionIdResponse, MessagesByChatSessionIdVariables>(
+    GET_MESSAGES_BY_CHAT_SESSION_ID,
+    {
+      variables: { chat_session_id: chatId },
+      skip: !chatId,
+    }
+  );
 
   useEffect(() => {
     if (data) {
