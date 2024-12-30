@@ -1,4 +1,5 @@
-"use client";
+"use client";;
+import { use } from "react";
 
 import {
   Dialog,
@@ -9,7 +10,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-function ChatbotPage({ params: { id } }: { params: { id: string } }) {
+function ChatbotPage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
+
+  const {
+    id
+  } = params;
+
   return <div>ChatbotPage: {id}</div>;
 }
 
