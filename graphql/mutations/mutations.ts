@@ -78,9 +78,11 @@ export const INSERT_GUEST = gql`
 
 
 
+
+
 export const INSERT_CHAT_SESSION = gql`
-  mutation insertChatSession($chatbot_id: Int!, $guest_id: Int!) {
-    insertChat_sessions(chatbot_id: $chatbot_id, guest_id: $guest_id) {
+  mutation insertChatSession($chatbot_id: Int!, $guest_id: Int!, $created_at: DateTime!) {
+    insertChat_sessions(chatbot_id: $chatbot_id, guest_id: $guest_id, created_at: $created_at) {
       id
     }
   }

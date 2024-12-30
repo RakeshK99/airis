@@ -9,14 +9,11 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
       variables: {
         name: guestName,
         email: guestEmail,
-        created_at: new Date().toISOString(), // DateTime format
+        created_at: new Date().toISOString(),
       },
     });
 
-    const guestId = guestResult.data?.insertGuests?.id;
-    if (!guestId) {
-      throw new Error("Failed to create guest. Guest ID is missing.");
-    }
+    const guestId = guestResult.data.insertGuests.id;
     console.log("Guest created with ID:", guestId);
 
     // 2. Initialize a new chat session
@@ -25,13 +22,11 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
       variables: {
         chatbot_id: chatbotId,
         guest_id: guestId,
+        created_at: new Date().toISOString(),
       },
     });
 
-    const chatSessionId = chatSessionResult.data?.insertChat_sessions?.id;
-    if (!chatSessionId) {
-      throw new Error("Failed to create chat session. Chat session ID is missing.");
-    }
+    const chatSessionId = chatSessionResult.data.insertChat_sessions.id;
     console.log("Chat session created with ID:", chatSessionId);
 
     // 3. Insert initial message (optional)
