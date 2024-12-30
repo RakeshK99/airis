@@ -1,5 +1,24 @@
 import { gql } from "@apollo/client";
 
+export const GET_USER_CHATBOTS = gql`
+  query GetChatbots {
+    chatbotsList {
+      id
+      name
+      clerk_user_id
+      chat_sessions {
+        id
+        created_at
+        guests {
+          name
+          email
+        }
+      }
+    }
+  }
+`;
+
+
 export const GET_CHATBOTS_BY_USER = gql`
   query GetChatbots {
     chatbotsList {
@@ -52,3 +71,26 @@ export const GET_CHATBOT_BY_ID = gql`
     }
   }
 `;
+
+export const GET_CHAT_SESSION_MESSAGES = gql`
+  query GetChatSessionMessages($id: Int!) {
+    chat_sessions(id: $id) {
+      id
+      created_at
+      messages {
+        id
+        content
+        created_at
+        sender
+      }
+      chatbots {
+        name
+      }
+      guests {
+        name
+        email
+      }
+    }
+  }
+`;
+
