@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +28,7 @@ import {
 import Messages from "@/components/Messages";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -42,9 +42,8 @@ const formSchema = z.object({
   message: z.string().min(2, "Your Message is too short!"),
 });
 
-function ChatbotPage(props: { params: Promise<{ id: string }> }) {
-  const params = use(props.params);
-  const { id } = params;
+function ChatbotPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -67,17 +66,13 @@ function ChatbotPage(props: { params: Promise<{ id: string }> }) {
     }
   );
 
-  const {
-    loading: loadingQuery,
-    error,
-    data,
-  } = useQuery<MessagesByChatSessionIdResponse, MessagesByChatSessionIdVariables>(
-    GET_MESSAGES_BY_CHAT_SESSION_ID,
-    {
-      variables: { chat_session_id: chatId },
-      skip: !chatId,
-    }
-  );
+  const { loading: loadingQuery, data } = useQuery<
+    MessagesByChatSessionIdResponse,
+    MessagesByChatSessionIdVariables
+  >(GET_MESSAGES_BY_CHAT_SESSION_ID, {
+    variables: { chat_session_id: chatId },
+    skip: !chatId,
+  });
 
   useEffect(() => {
     if (data) {
@@ -94,76 +89,68 @@ function ChatbotPage(props: { params: Promise<{ id: string }> }) {
     setLoading(false);
     setIsOpen(false);
   };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    const { message: formMessage } = values;
-  
-    const message = formMessage;
+    const { message } = values;
     form.reset();
-  
+
     if (!name || !email) {
       setIsOpen(true);
       setLoading(false);
       return;
     }
 
-    // Handle message flow here...
-if (!message.trim()) {
-  return; // Do not submit if the message is empty
-}
+    if (!message.trim()) {
+      return; // Do not submit if the message is empty
+    }
 
-
-// Optimistically update the UI with the user's message
-const userMessage: Message = {
-  id: Date.now(),
-  content: message,
-  created_at: new Date().toISOString(),
-  chat_session_id: chatId,
-  sender: "user",
-};
-
-// ...And show loading state for AI response
-const loadingMessage: Message = {
-  id: Date.now() + 1,
-  content: "Thinking...",
-  created_at: new Date().toISOString(),
-  chat_session_id: chatId,
-  sender: "ai",
-};
-setMessages((prevMessages) => [
-  ...prevMessages,
-  userMessage,
-  loadingMessage,
-]);
-
-try {
-  const response = await fetch("/api/send-message", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: name,
-      chat_session_id: chatId,
-      chatbot_id: id,
+    // Optimistically update the UI with the user's message
+    const userMessage: Message = {
+      id: Date.now(),
       content: message,
-    }),
-  });
-  const result = await response.json();
+      created_at: new Date().toISOString(),
+      chat_session_id: chatId,
+      sender: "user",
+    };
 
-  setMessages((prevMessages) =>
-    prevMessages.map((msg) =>
-      msg.id === loadingMessage.id
-        ? { ...msg, content: result.content, id: result.id }
-        : msg
-    )
-  );
-  
-} catch (error) {
-  console.error("Error sending message:", error);
-}
+    const loadingMessage: Message = {
+      id: Date.now() + 1,
+      content: "Thinking...",
+      created_at: new Date().toISOString(),
+      chat_session_id: chatId,
+      sender: "ai",
+    };
+
+    setMessages((prevMessages) => [...prevMessages, userMessage, loadingMessage]);
+
+    try {
+      const response = await fetch("/api/send-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          chat_session_id: chatId,
+          chatbot_id: id,
+          content: message,
+        }),
+      });
+
+      const result = await response.json();
+
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === loadingMessage.id
+            ? { ...msg, content: result.content, id: result.id }
+            : msg
+        )
+      );
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   }
-  
 
   return (
     <div className="w-full flex bg-gray-100">
@@ -176,7 +163,6 @@ try {
                 I just need a few details to get started.
               </DialogDescription>
             </DialogHeader>
-
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="name" className="text-right">
@@ -191,11 +177,11 @@ try {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
+                <Label htmlFor="email" className="text-right">
                   Email
                 </Label>
                 <Input
-                  id="username"
+                  id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -221,15 +207,15 @@ try {
           />
           <div>
             <h1 className="truncate text-lg">{chatBotData?.chatbots.name}</h1>
-            <p className="text-sm text-gray-300">Typically replies Instantly</p>
+            <p className="text-sm text-gray-300">Typically replies instantly</p>
           </div>
         </div>
         <Messages messages={messages} chatbotName={chatBotData?.chatbots.name!} />
-
-        <Form {...form}>
-          <form 
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex items-start sticky bottom-0 z-50 space-x-4 drop-shadow-lg p-4 bg-gray-100 rounded-md">
+        <FormProvider {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex items-start sticky bottom-0 z-50 space-x-4 drop-shadow-lg p-4 bg-gray-100 rounded-md"
+          >
             <FormField
               control={form.control}
               name="message"
@@ -237,24 +223,21 @@ try {
                 <FormItem className="flex-1">
                   <FormLabel hidden>Message</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Type a message..."
-                      {...field}
-                      className="p-8"
-                    />
+                    <Input placeholder="Type a message..." {...field} className="p-8" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button 
-
-            type="submit" 
-            className="h-full"
-            disabled={form.formState.isSubmitting || !form.formState.isValid}
-            >Send</Button>
+            <Button
+              type="submit"
+              className="h-full"
+              disabled={form.formState.isSubmitting || !form.formState.isValid}
+            >
+              Send
+            </Button>
           </form>
-        </Form>
+        </FormProvider>
       </div>
     </div>
   );
