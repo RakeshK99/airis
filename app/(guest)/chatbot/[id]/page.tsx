@@ -18,6 +18,7 @@ import Avatar from "@/components/Avatar";
 import { GetChatbotByIdResponse, Message, MessagesByChatSessionIdResponse, MessagesByChatSessionIdVariables } from "@/types/types";
 import { useQuery } from "@apollo/client";
 import { GET_CHATBOT_BY_ID, GET_MESSAGES_BY_CHAT_SESSION_ID } from "@/graphql/queries/queries";
+import Messages from "@/components/Messages";
 
 function ChatbotPage(props: { params: Promise<{ id: string }> }) {
   const params = use(props.params);
@@ -126,6 +127,10 @@ function ChatbotPage(props: { params: Promise<{ id: string }> }) {
             <p className="text-sm text-gray-300">Typically replies Instantly</p>
           </div>
         </div>
+        <Messages
+        messages={messages}
+         chatbotName={chatBotData?.chatbots.name!}
+            />
       </div>
     </div>
   );
