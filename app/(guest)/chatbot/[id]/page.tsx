@@ -16,7 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import startNewChat from "@/lib/startNewChat";
 
-function ChatbotPage({ params }: { params: { id: string } }) {
+function ChatbotPage(props: { params: Promise<{ id: string }> }) {
+  const params = use(props.params);
   const { id } = params; // Extract `id` from `params`
 
   const [name, setName] = useState("");

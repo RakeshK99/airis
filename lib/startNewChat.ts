@@ -9,6 +9,7 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
       variables: {
         name: guestName,
         email: guestEmail,
+        created_at: new Date().toISOString(), // Provide the required created_at parameter
       },
     });
 
@@ -36,8 +37,8 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
         content: `Welcome ${guestName}!\nHow can I assist you today? 😊`,
       },
     });
-    
-    console.log("New chat session started successfully!")
+
+    console.log("New chat session started successfully!");
     return chatSessionId;
   } catch (error) {
     console.error("Error starting new chat session:", error);
