@@ -9,7 +9,7 @@ async function startNewChat(guestName: string, guestEmail: string, chatbotId: nu
       variables: {
         name: guestName,
         email: guestEmail,
-        created_at: new Date().toISOString(), // Provide the required created_at parameter
+        created_at: new Date().toISOString(),
       },
     });
 
