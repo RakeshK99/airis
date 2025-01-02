@@ -2,65 +2,73 @@ import Messages from "@/components/Messages";
 import { GET_CHAT_SESSION_MESSAGES } from "@/graphql/queries/queries";
 import { serverClient } from "@/lib/server/serverClient";
 import {
-  GetChatSessionMessagesResponse,
-  GetChatSessionMessagesVariables,
+    GetChatSessionMessagesResponse,
+    GetChatSessionMessagesVariables,
 } from "@/types/types";
 
 export const dynamic = "force-dynamic";
 
-async function ReviewSession(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+async function ReviewSession({ params }: { params: { id: string } }) {
+    const id = params.id;
 
-  const {
-    id
-  } = params;
+    try {
+        const {
+            data: { chat_sessions },
+        } = await serverClient.query<
+            GetChatSessionMessagesResponse,
+            GetChatSessionMessagesVariables
+        >({
+            query: GET_CHAT_SESSION_MESSAGES,
+            variables: { id: parseInt(id) },
+        });
 
-  const {
-    data: { chat_sessions },
-  } = await serverClient.query<
-    GetChatSessionMessagesResponse,
-    GetChatSessionMessagesVariables
-  >({
-    query: GET_CHAT_SESSION_MESSAGES,
-    variables: { id: parseInt(id) },
-  });
+        if (!chat_sessions) {
+            return (
+                <div className="flex-1 p-10 pb-24">
+                    <h1 className="text-xl lg:text-3xl font-semibold">Session Not Found</h1>
+                    <p className="font-light text-gray-500 mt-2">
+                        The session you are looking for does not exist or has been removed.
+                    </p>
+                </div>
+            );
+        }
 
-  if (!chat_sessions) {
-    return (
-      <div className="flex-1 p-10 pb-24">
-        <h1 className="text-xl lg:text-3xl font-semibold">Session Not Found</h1>
-        <p className="font-light text-gray-500 mt-2">
-          The session you are looking for does not exist or has been removed.
-        </p>
-      </div>
-    );
-  }
+        const {
+            id: chatSessionId,
+            created_at,
+            messages,
+            chatbots: { name },
+            guests: { name: guestName, email },
+        } = chat_sessions;
 
-  const {
-    id: chatSessionId,
-    created_at,
-    messages,
-    chatbots: { name },
-    guests: { name: guestName, email },
-  } = chat_sessions;
+        return (
+            <div className="flex-1 p-10 pb-24">
+                <h1 className="text-xl lg:text-3xl font-semibold">Session Review</h1>
+                <p className="font-light text-xs text-gray-400 mt-2">
+                    Started at {new Date(created_at).toLocaleString()}
+                </p>
 
-  return (
-    <div className="flex-1 p-10 pb-24">
-      <h1 className="text-xl lg:text-3xl font-semibold">Session Review</h1>
-      <p className="font-light text-xs text-gray-400 mt-2">
-        Started at {new Date(created_at).toLocaleString()}
-      </p>
-
-      <h2 className="font-light mt-2">
-        Between {name} &{" "}
-        <span className="font-extrabold">
-          {guestName} ({email || "No email provided"})
-        </span>
-      </h2>
-      <hr className="my-10" />
-      <Messages messages={messages} chatbotName={name} />
-    </div>
-  );
+                <h2 className="font-light mt-2">
+                    Between {name} &{" "}
+                    <span className="font-extrabold">
+                        {guestName} ({email || "No email provided"})
+                    </span>
+                </h2>
+                <hr className="my-10" />
+                <Messages messages={messages} chatbotName={name} />
+            </div>
+        );
+    } catch (error) {
+        console.error("Error fetching session:", error);
+        return (
+            <div className="flex-1 p-10 pb-24">
+                <h1 className="text-xl lg:text-3xl font-semibold">Error</h1>
+                <p className="font-light text-gray-500 mt-2">
+                    Unable to fetch session details. Please try again later.
+                </p>
+            </div>
+        );
+    }
 }
 
 export default ReviewSession;
