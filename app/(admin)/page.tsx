@@ -24,13 +24,14 @@ export default function Home() {
                 </span>
             </h1>
             <h2 className="mt-2 mb-10 text-gray-600">
-                Your customizable AI chat agent that helps you manage your customer conversations.
+                Your customizable AI chat agent that helps you manage your customer
+                conversations.
             </h2>
             <Link href="/create-chatbot">
                 <Button
                     className="bg-[#4d7dfb] hover:bg-[#2991ee] text-white font-semibold px-6 py-3 rounded-md shadow-md transition-transform transform hover:scale-105"
                 >
-                    Let's get started by creating your first chatbot
+                    Let&apos;s get started by creating your first chatbot
                 </Button>
             </Link>
         </main>

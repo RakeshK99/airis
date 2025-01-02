@@ -34,7 +34,6 @@ async function ReviewSession({ params }: { params: { id: string } }) {
         }
 
         const {
-            id: chatSessionId,
             created_at,
             messages,
             chatbots: { name },
