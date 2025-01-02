@@ -8,10 +8,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
-async function ReviewSession(props: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await props.params;
-
-  const { id } = resolvedParams;
+async function ReviewSession({ params }: { params: { id: string } }) {
+  const { id } = params;
 
   const {
     data: { chat_sessions },
