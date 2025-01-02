@@ -8,8 +8,12 @@ import {
 
 export const dynamic = "force-dynamic";
 
-async function ReviewSession({ params }: { params: { id: string } }) {
-  const { id } = params;
+async function ReviewSession(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
 
   const {
     data: { chat_sessions },
@@ -33,6 +37,7 @@ async function ReviewSession({ params }: { params: { id: string } }) {
   }
 
   const {
+    id: chatSessionId,
     created_at,
     messages,
     chatbots: { name },
