@@ -15,7 +15,7 @@ async function ReviewSession({ params }: { params: { id: string } }) {
     GetChatSessionMessagesVariables
   >({
     query: GET_CHAT_SESSION_MESSAGES,
-    variables: { id: parseInt(id, 10) },
+    variables: { id: parseInt(id) },
   });
 
   if (!chat_sessions) {
@@ -29,7 +29,12 @@ async function ReviewSession({ params }: { params: { id: string } }) {
     );
   }
 
-  const { id: chatSessionId, created_at, messages, chatbots: { name }, guests: { name: guestName, email } } = chat_sessions;
+  const {
+    created_at,
+    messages,
+    chatbots: { name },
+    guests: { name: guestName, email },
+  } = chat_sessions;
 
   return (
     <div className="flex-1 p-10 pb-24">
@@ -37,8 +42,9 @@ async function ReviewSession({ params }: { params: { id: string } }) {
       <p className="font-light text-xs text-gray-400 mt-2">
         Started at {new Date(created_at).toLocaleString()}
       </p>
+
       <h2 className="font-light mt-2">
-        Between {name} &nbsp;
+        Between {name} &{" "}
         <span className="font-extrabold">
           {guestName} ({email || "No email provided"})
         </span>
@@ -48,5 +54,6 @@ async function ReviewSession({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
 
 export default ReviewSession;
