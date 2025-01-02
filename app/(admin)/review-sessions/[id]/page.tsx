@@ -1,12 +1,16 @@
-import { GetChatSessionMessagesResponse, GetChatSessionMessagesVariables } from "@/types/types";
+import Messages from "@/components/Messages";
 import { GET_CHAT_SESSION_MESSAGES } from "@/graphql/queries/queries";
 import { serverClient } from "@/lib/server/serverClient";
-import Messages from "@/components/Messages";
+import {
+  GetChatSessionMessagesResponse,
+  GetChatSessionMessagesVariables,
+} from "@/types/types";
 
 export const dynamic = "force-dynamic";
 
-async function ReviewSession({ params }: { params: { id: string } }) {
-  const { id } = params;
+async function ReviewSession({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 
   const {
     data: { chat_sessions },
@@ -54,6 +58,5 @@ async function ReviewSession({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
 
 export default ReviewSession;
